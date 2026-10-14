@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Desargues</title>
+    <script type="text/javascript" src="../lib/Cindy.js"></script>
+    <script type="text/javascript" src="../lib/CindyGL.js"></script>
+    <style>
+      button {
+        background-color: white;border: 1px solid #ccc;border-radius: 8px;
+        padding: 5px 10px;cursor: pointer;outline: none;
+      }
+      button:hover {
+          background-color: #f0f0f0;
+      }
+      button:active {
+          background-color: #e0e0e0;transform: scale(0.98);
+      }
+    </style>
+  </head>
+  <body style="font-family: Arial">
+    <script id="csmousedown" type="text/x-cindyscript">
+      dgs3dHandleMouseDown()
+    </script>
+    <script id="csmouseup" type="text/x-cindyscript">
+      dgs3dHandleMouseUp()
+    </script>
+    <script id="csinit" type="text/x-cindyscript">
+      dgs3dPrepare();
+      zoom = 1.0;
+      updateZoom():=(
+        if(zoom>5,zoom=5);
+        if(zoom<0.2,zoom=0.2);
+        zoom3d(zoom);
+        dgs3dHandleZoom(zoom);
+      );
+      cgl3d.defaults:"sphereSize" = 0.1;
+      cgl3d.defaults:"cylinderSize" = 0.05;
+
+      O = point3d((0,0,0),color->"black");
+      A = point3d((1,0,0),color->"yellow");
+      B = point3d((0,1,0),color->"yellow");
+      C = point3d((0,0,1),color->"yellow");
+      lA = join3d(O,A);
+      lB = join3d(O,B);
+      lC = join3d(O,C);
+      P = pointOnLine3d(lA,(0.5,0,0),color->"magenta");
+      Q = pointOnLine3d(lB,(0,1.3,0),color->"magenta");
+      R = pointOnLine3d(lC,(0,0,2),color->"magenta");
+      lAB = join3d(A,B,color->"yellow");
+      lBC = join3d(B,C,color->"yellow");
+      lCA = join3d(C,A,color->"yellow");
+      pABC = join3d(A,B,C,color->"yellow");
+      lPQ = join3d(P,Q,color->"magenta");
+      lQR = join3d(Q,R,color->"magenta");
+      lRP = join3d(R,P,color->"magenta");
+      pPQR = join3d(P,Q,R,color->"magenta");
+      X = meet3d(lAB,lPQ,color->"cyan");
+      Y = meet3d(lBC,lQR,color->"cyan");
+      Z = meet3d(lCA,lRP,color->"cyan");
+      lXY = join3d(X,Y,color->"cyan");
+      rotate3d(pi/4,pi/8);
+
+      moveTo(P,X):=(
+        dgs3dTracePoint(P,X);
+        dgs3dRedrawChildren(P);
+      );
+      resetCoords():=(
+        // TODO: replace with reset in cgl.cjs once implemented
+        cgl3d.spaceTransform = ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1));
+        cgl3d.renderTransform = ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1));
+        cgl3d.zoomFactor = 1;
+      );
+      resetFlatSymmetric():=(
+        resetCoords();
+        moveTo(O,(0,0,0,1));
+        moveTo(A,(1,-1,0,1));
+        moveTo(B,(0.3,0,0,1));
+        moveTo(C,(0.5,0.5,0,1));
+        moveTo(P,(-0.5,0.5,0,1));
+        moveTo(Q,(-0.3,0,0,1));
+        moveTo(R,(-1,-1,0,1));
+      );
+      resetFlatTriangular():=(
+        resetCoords();
+        moveTo(O,(-2,0,0,1));
+        moveTo(A,(-0.7,-0.5,0,1));
+        moveTo(B,(-0.2,-0.2,0,1));
+        moveTo(C,(-0.8,0.4,0,1));
+        moveTo(P,(-0.1,-0.7,0,1));
+        moveTo(Q,(0.4,-0.3,0,1));
+        moveTo(R,(0.4,0.8,0,1));
+      );
+      resetPyramid():=(
+        resetCoords();
+        moveTo(O,(0,0,0,1));
+        moveTo(A,(1,0,0,1));
+        moveTo(B,(0,1,0,1));
+        moveTo(C,(0,0,1,1));
+        moveTo(P,(0.5,0,0,1));
+        moveTo(Q,(0,1.3,0,1));
+        moveTo(R,(0,0,2,1));
+        rotate3d(pi/4,pi/8);
+      );
+      dumpCoords():=(
+        print("O: "+O.coords);
+        print("A: "+A.coords);
+        print("B: "+B.coords);
+        print("C: "+C.coords);
+        print("P: "+P.coords);
+        print("Q: "+Q.coords);
+        print("R: "+R.coords);
+      );
+    </script>
+    <script id="csdraw" type="text/x-cindyscript">
+      dgs3dPreFrame();
+      render3d();
+    </script>
+
+  <div>Desargues's Theorem: 3D-View</div>
+  <div id="CSCanvas" style="border: 0px"></div>
+  <div>
+    <button onclick="resetCoords()">Reset Coordinate System</button>
+    <button onclick="resetFlatSymmetric()">Flat Symmetric</button>
+    <button onclick="resetFlatTriangular()">Flat Triangular</button>
+    <button onclick="resetPyramid()">Pyramid</button>
+    <!--TODO: toggles for colors and planes-->
+  </div>
+
+    <script type="text/javascript">
+      function resetCoords() {
+        cdy.evokeCS("resetCoords()");
+      }
+      function dumpCoords() {
+        cdy.evokeCS("dumpCoords()");
+      }
+      function resetFlatSymmetric() {
+        cdy.evokeCS("resetFlatSymmetric()");
+      }
+      function resetFlatTriangular() {
+        cdy.evokeCS("resetFlatTriangular()");
+      }
+      function resetPyramid() {
+        cdy.evokeCS("resetPyramid()");
+      }
+      // zoom using mouse wheel, inverted direction for compatability with old raycaster script
+      window.addEventListener("wheel", // use only sign as value range may differ depending on browser
+        event => cdy.evokeCS(`zoom=zoom*${Math.pow(0.95,Math.sign(event.deltaY))};updateZoom();`)
+      );
+      const cdy = CindyJS({
+        canvasname: "CSCanvas",
+        scripts: "cs*",
+        ports: [
+          {
+            id: "CSCanvas",
+            width: 512,
+            height: 512,
+            transform: [{ visibleRect: [-3, -3, 3, 3] }],
+          },
+        ],
+        import: {
+          "init": ["../lib/cgl3d.cjs","../lib/dgs.cjs"]
+        }
+      });
+    </script>
+  </body>
+</html>
