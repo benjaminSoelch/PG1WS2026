@@ -60,6 +60,23 @@
       Z = meet3d(lCA,lRP,color->"cyan");
       lXY = join3d(X,Y,color->"cyan");
       rotate3d(pi/4,pi/8);
+      objColors = apply(dgs3dObjects,#.color);
+
+      disableColor():=(
+        dgs3dUpdateColor(pABC,visible->false);
+        dgs3dUpdateColor(pPQR,visible->false);
+        print(pABC.visible);
+        forall(dgs3dObjects,
+          dgs3dUpdateColor(#,color->"black");
+        );
+      );
+      enableColor():=(
+        dgs3dUpdateColor(pABC,visible->true);
+        dgs3dUpdateColor(pPQR,visible->true);
+        forall(dgs3dObjects,
+          dgs3dUpdateColor(#,color->objColors_(#.id));
+        );
+      );
 
       moveTo(P,X):=(
         dgs3dTracePoint(P,X);
@@ -120,7 +137,8 @@
   <div>Desargues's Theorem: 3D-View</div>
   <div id="CSCanvas" style="border: 0px"></div>
   <div>
-    <button onclick="resetCoords()">Reset Coordinate System</button>
+    <button onclick="resetCoords()">Reset Rotation</button>
+    <button onclick="toggleColors()">Toggle Color</button>
     <button onclick="resetFlatSymmetric()">Flat Symmetric</button>
     <button onclick="resetFlatTriangular()">Flat Triangular</button>
     <button onclick="resetPyramid()">Pyramid</button>
@@ -128,6 +146,14 @@
   </div>
 
     <script type="text/javascript">
+      let colorsEnabled = true;
+      function toggleColors() {
+        if(colorsEnabled=!colorsEnabled) {
+          cdy.evokeCS("enableColor()");
+        } else {
+          cdy.evokeCS("disableColor()");
+        }
+      }
       function resetCoords() {
         cdy.evokeCS("resetCoords()");
       }
