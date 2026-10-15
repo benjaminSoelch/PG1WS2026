@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Standard Embedding</title>
+    <script type="text/javascript" src="../lib/Cindy.js"></script>
+    <script type="text/javascript" src="../lib/CindyGL.js"></script>
+    <style>
+      button {
+        background-color: white;border: 1px solid #ccc;border-radius: 8px;
+        padding: 5px 10px;cursor: pointer;outline: none;
+      }
+      button:hover {
+          background-color: #f0f0f0;
+      }
+      button:active {
+          background-color: #e0e0e0;transform: scale(0.98);
+      }
+    </style>
+  </head>
+  <body style="font-family: Arial">
+    <script id="csmousedown" type="text/x-cindyscript">
+      dgs3dHandleMouseDown()
+    </script>
+    <script id="csmouseup" type="text/x-cindyscript">
+      dgs3dHandleMouseUp()
+    </script>
+    <script id="csinit" type="text/x-cindyscript">
+      dgs3dPrepare();
+      zoom = 1.0;
+      updateZoom():=(
+        if(zoom>5,zoom=5);
+        if(zoom<0.2,zoom=0.2);
+        zoom3d(zoom);
+        dgs3dHandleZoom(zoom);
+      );
+      cgl3d.defaults:"sphereSize" = 0.1;
+      cgl3d.defaults:"cylinderSize" = 0.05;
+
+      O = point3d((0,0,0),color->"black",pinned->true);
+      U = point3d((1,0,0),visible->false,pinned->true);
+      s = sphere3dMR(O,U,color->"blue",alpha->0.8);
+      p = plane3d((0,0,1,1),alpha->0.9);
+      A = point3d((-1,-1,-1));
+      B = point3d((1,1,-1));
+      C = point3d((1,-1,-1));
+      D = point3d((-1,1,-1));
+      lA = join3d(A,O,size->0.03);
+      lB = join3d(B,O,size->0.03);
+      lC = join3d(C,O,size->0.03);
+      lD = join3d(D,O,size->0.03);
+      pA = meet3d(lA,p,color->"white");
+      pB = meet3d(lB,p,color->"white");
+      pC = meet3d(lC,p,color->"white");
+      pD = meet3d(lD,p,color->"white");
+      pAB = join3d(lA,lB,color->"black",alpha->0.5);
+      pCD = join3d(lC,lD,color->"black",alpha->0.5);
+      lAB = meet3d(pAB,p,color->"gray");
+      lCD = meet3d(pCD,p,color->"gray");
+      lE = meet3d(pAB,pCD,color->"yellow",size->0.03);
+      E = meet3d(lE,p,color->"yellow");
+      cAB = meet3d(pAB,s,color->"gray",size->0.04);
+      cCD = meet3d(pCD,s,color->"gray",size->0.04);
+      sA = meet3d(lA,s,color->"white",size->0.09);
+      sB = meet3d(lB,s,color->"white",size->0.09);
+      sC = meet3d(lC,s,color->"white",size->0.09);
+      sD = meet3d(lD,s,color->"white",size->0.09);
+      sE = meet3d(lE,s,color->"yellow",size->0.09);
+
+      moveTo(P,X):=(
+        dgs3dTracePoint(P,X);
+        dgs3dRedrawChildren(P);
+      );
+      resetCoords():=(
+        // TODO: replace with reset in cgl.cjs once implemented
+        cgl3d.spaceTransform = ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1));
+        cgl3d.renderTransform = ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1));
+        cgl3d.zoomFactor = 1;
+      );
+      resetCross():=(
+        resetCoords();
+        moveTo(A,(-1,-1,-1,1));
+        moveTo(B,(1,1,-1,1));
+        moveTo(C,(1,-1,-1,1));
+        moveTo(D,(-1,1,-1,1));
+      );
+      resetParallel():=(
+        resetCoords();
+        moveTo(A,(-1,-1,-1,1));
+        moveTo(B,(1,-1,-1,1));
+        moveTo(C,(1,1,-1,1));
+        moveTo(D,(-1,1,-1,1));
+      );
+    </script>
+    <script id="csdraw" type="text/x-cindyscript">
+      dgs3dPreFrame();
+      render3d();
+    </script>
+
+  <div>Standard Embedding: 3D-View</div>
+  <div id="CSCanvas" style="border: 0px"></div>
+  <div>
+    <button onclick="resetCoords()">Reset Rotation</button>
+    <button onclick="resetCross()">Cross</button>
+    <button onclick="resetParallel()">Parallel</button>
+    <!--TODO: toggles for plane,sphere,projection-line-->
+    <!--TODO: normalize pts to plane/sphere-->
+  </div>
+
+    <script type="text/javascript">
+      function resetCoords() {
+        cdy.evokeCS("resetCoords()");
+      }
+      function resetParallel() {
+        cdy.evokeCS("resetParallel()");
+      }
+      function resetCross() {
+        cdy.evokeCS("resetCross()");
+      }
+      // zoom using mouse wheel, inverted direction for compatability with old raycaster script
+      window.addEventListener("wheel", // use only sign as value range may differ depending on browser
+        event => cdy.evokeCS(`zoom=zoom*${Math.pow(0.95,Math.sign(event.deltaY))};updateZoom();`)
+      );
+      const cdy = CindyJS({
+        canvasname: "CSCanvas",
+        scripts: "cs*",
+        ports: [
+          {
+            id: "CSCanvas",
+            width: 512,
+            height: 512,
+            transform: [{ visibleRect: [-3, -3, 3, 3] }],
+          },
+        ],
+        import: {
+          "init": ["../lib/cgl3d.cjs","../lib/dgs.cjs"]
+        }
+      });
+    </script>
+  </body>
+</html>
