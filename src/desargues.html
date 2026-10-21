@@ -109,7 +109,9 @@
         // TODO: replace with reset in cgl.cjs once implemented
         cgl3d.spaceTransform = ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1));
         cgl3d.renderTransform = ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1));
-        cgl3d.zoomFactor = 1;
+        zoom = 1;
+        zoom3d(zoom);
+        dgs3dHandleZoom(zoom);
       );
       resetFlatSymmetric():=(
         resetCoords();
