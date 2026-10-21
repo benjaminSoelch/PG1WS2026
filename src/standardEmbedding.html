@@ -18,14 +18,18 @@
         padding: 2rem;
       }
       button {
-        background-color: white;border: 1px solid #ccc;border-radius: 8px;
+        color: #f1f5f9;
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 8px;
         padding: 5px 10px;cursor: pointer;outline: none;
       }
       button:hover {
-          background-color: #f0f0f0;
+        background: #334155;
+        border-color: #60a5fa;
       }
       button:active {
-          background-color: #e0e0e0;transform: scale(0.98);
+        transform: scale(0.98);
       }
     </style>
   </head>
@@ -58,8 +62,6 @@
       sphereColor = "blue";
 
       O = point3d((0,0,0),color->rayColor,pinned->true);
-      U = point3d((1,0,0),visible->false,pinned->true);
-      s = sphere3dMR(O,U,color->sphereColor,alpha->0.8);
       p = plane3d((0,0,1,1),alpha->0.9);
       A = point3d((-1,-1,-1));
       B = point3d((1,1,-1));
@@ -73,19 +75,44 @@
       pB = meet3d(lB,p,color->pointColor);
       pC = meet3d(lC,p,color->pointColor);
       pD = meet3d(lD,p,color->pointColor);
-      pAB = join3d(lA,lB,color->rayColor,alpha->0.5);
-      pCD = join3d(lC,lD,color->rayColor,alpha->0.5);
+      pAB = join3d(O,A,B,color->rayColor,alpha->0.5);
+      pCD = join3d(O,C,D,color->rayColor,alpha->0.5);
       lAB = meet3d(pAB,p,color->lineColor);
       lCD = meet3d(pCD,p,color->lineColor);
       lE = meet3d(pAB,pCD,color->meetColor,size->0.03);
-      E = meet3d(lE,p,color->meetColor);
-      cAB = meet3d(pAB,s,color->lineColor,size->0.04);
-      cCD = meet3d(pCD,s,color->lineColor,size->0.04);
-      sA = meet3d(lA,s,color->pointColor,size->0.09);
-      sB = meet3d(lB,s,color->pointColor,size->0.09);
-      sC = meet3d(lC,s,color->pointColor,size->0.09);
-      sD = meet3d(lD,s,color->pointColor,size->0.09);
-      sE = meet3d(lE,s,color->meetColor,size->0.09);
+      pE = meet3d(lE,p,color->meetColor);
+      U = point3d((1,0,0),visible->false,pinned->true);
+      s = sphere3dMR(O,U,color->sphereColor,alpha->0.8,visible->false);
+      cAB = meet3d(pAB,s,color->lineColor,size->0.04,visible->false);
+      cCD = meet3d(pCD,s,color->lineColor,size->0.04,visible->false);
+      sA = meet3d(lA,s,color->pointColor,size->0.09,visible->false);
+      sB = meet3d(lB,s,color->pointColor,size->0.09,visible->false);
+      sC = meet3d(lC,s,color->pointColor,size->0.09,visible->false);
+      sD = meet3d(lD,s,color->pointColor,size->0.09,visible->false);
+      sE = meet3d(lE,s,color->meetColor,size->0.09,visible->false);
+
+      planeVisible = true;
+      sphereVisible = false;
+      setPlaneVisibility(visible):=(
+        dgs3dUpdateColor(p,visible->visible);
+        dgs3dUpdateColor(pA,visible->visible);
+        dgs3dUpdateColor(pB,visible->visible);
+        dgs3dUpdateColor(pC,visible->visible);
+        dgs3dUpdateColor(pD,visible->visible);
+        dgs3dUpdateColor(pE,visible->visible);
+        dgs3dUpdateColor(lAB,visible->visible);
+        dgs3dUpdateColor(lCD,visible->visible);
+      );
+      setSphereVisibility(visible):=(
+        dgs3dUpdateColor(s,visible->visible);
+        dgs3dUpdateColor(cAB,visible->visible);
+        dgs3dUpdateColor(cCD,visible->visible);
+        apply(sA,dgs3dUpdateColor(#,visible->visible));
+        apply(sB,dgs3dUpdateColor(#,visible->visible));
+        apply(sC,dgs3dUpdateColor(#,visible->visible));
+        apply(sD,dgs3dUpdateColor(#,visible->visible));
+        apply(sE,dgs3dUpdateColor(#,visible->visible));
+      );
 
       moveTo(P,X):=(
         dgs3dTracePoint(P,X);
@@ -98,14 +125,12 @@
         cgl3d.zoomFactor = 1;
       );
       resetCross():=(
-        resetCoords();
         moveTo(A,(-1,-1,-1,1));
         moveTo(B,(1,1,-1,1));
         moveTo(C,(1,-1,-1,1));
         moveTo(D,(-1,1,-1,1));
       );
       resetParallel():=(
-        resetCoords();
         moveTo(A,(-1,-1,-1,1));
         moveTo(B,(1,-1,-1,1));
         moveTo(C,(1,1,-1,1));
@@ -123,8 +148,8 @@
     <button onclick="resetCoords()">Reset Rotation</button>
     <button onclick="resetCross()">Cross</button>
     <button onclick="resetParallel()">Parallel</button>
-    <!--TODO: toggles for plane,sphere,projection-line-->
-    <!--TODO: normalize pts to plane/sphere-->
+    <button onclick="togglePlane()">Toggle Plane</button>
+    <button onclick="toggleSphere()">Toggle Sphere</button>
   </div>
 
     <script type="text/javascript">
@@ -136,6 +161,12 @@
       }
       function resetCross() {
         cdy.evokeCS("resetCross()");
+      }
+      function togglePlane() {
+        cdy.evokeCS("setPlaneVisibility(planeVisible=!planeVisible)");
+      }
+      function toggleSphere() {
+        cdy.evokeCS("setSphereVisibility(sphereVisible=!sphereVisible)");
       }
       // zoom using mouse wheel, inverted direction for compatability with old raycaster script
       window.addEventListener("wheel", // use only sign as value range may differ depending on browser
