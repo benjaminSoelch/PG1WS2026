@@ -6,6 +6,17 @@
     <script type="text/javascript" src="../lib/Cindy.js"></script>
     <script type="text/javascript" src="../lib/CindyGL.js"></script>
     <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        padding: 2rem;
+      }
       button {
         background-color: white;border: 1px solid #ccc;border-radius: 8px;
         padding: 5px 10px;cursor: pointer;outline: none;
@@ -36,39 +47,45 @@
       );
       cgl3d.defaults:"sphereSize" = 0.1;
       cgl3d.defaults:"cylinderSize" = 0.05;
-      dgs3dClipPoint = dgs3dClipPointCube;
+      // cube as bounding region
+      dgs3dClipPoint = dgs3dClipPointNone;
       dgs3dClipLine = dgs3dClipLineCube;
       dgs3dClipSurface = dgs3dClipSurfaceCube;
+      rayColor = "gray";
+      pointColor = "white";
+      lineColor = "white";
+      meetColor = "yellow";
+      sphereColor = "blue";
 
-      O = point3d((0,0,0),color->"black",pinned->true);
+      O = point3d((0,0,0),color->rayColor,pinned->true);
       U = point3d((1,0,0),visible->false,pinned->true);
-      s = sphere3dMR(O,U,color->"blue",alpha->0.8);
+      s = sphere3dMR(O,U,color->sphereColor,alpha->0.8);
       p = plane3d((0,0,1,1),alpha->0.9);
       A = point3d((-1,-1,-1));
       B = point3d((1,1,-1));
       C = point3d((1,-1,-1));
       D = point3d((-1,1,-1));
-      lA = join3d(A,O,size->0.03);
-      lB = join3d(B,O,size->0.03);
-      lC = join3d(C,O,size->0.03);
-      lD = join3d(D,O,size->0.03);
-      pA = meet3d(lA,p,color->"white");
-      pB = meet3d(lB,p,color->"white");
-      pC = meet3d(lC,p,color->"white");
-      pD = meet3d(lD,p,color->"white");
-      pAB = join3d(lA,lB,color->"black",alpha->0.5);
-      pCD = join3d(lC,lD,color->"black",alpha->0.5);
-      lAB = meet3d(pAB,p,color->"gray");
-      lCD = meet3d(pCD,p,color->"gray");
-      lE = meet3d(pAB,pCD,color->"yellow",size->0.03);
-      E = meet3d(lE,p,color->"yellow");
-      cAB = meet3d(pAB,s,color->"gray",size->0.04);
-      cCD = meet3d(pCD,s,color->"gray",size->0.04);
-      sA = meet3d(lA,s,color->"white",size->0.09);
-      sB = meet3d(lB,s,color->"white",size->0.09);
-      sC = meet3d(lC,s,color->"white",size->0.09);
-      sD = meet3d(lD,s,color->"white",size->0.09);
-      sE = meet3d(lE,s,color->"yellow",size->0.09);
+      lA = join3d(A,O,size->0.03,color->rayColor);
+      lB = join3d(B,O,size->0.03,color->rayColor);
+      lC = join3d(C,O,size->0.03,color->rayColor);
+      lD = join3d(D,O,size->0.03,color->rayColor);
+      pA = meet3d(lA,p,color->pointColor);
+      pB = meet3d(lB,p,color->pointColor);
+      pC = meet3d(lC,p,color->pointColor);
+      pD = meet3d(lD,p,color->pointColor);
+      pAB = join3d(lA,lB,color->rayColor,alpha->0.5);
+      pCD = join3d(lC,lD,color->rayColor,alpha->0.5);
+      lAB = meet3d(pAB,p,color->lineColor);
+      lCD = meet3d(pCD,p,color->lineColor);
+      lE = meet3d(pAB,pCD,color->meetColor,size->0.03);
+      E = meet3d(lE,p,color->meetColor);
+      cAB = meet3d(pAB,s,color->lineColor,size->0.04);
+      cCD = meet3d(pCD,s,color->lineColor,size->0.04);
+      sA = meet3d(lA,s,color->pointColor,size->0.09);
+      sB = meet3d(lB,s,color->pointColor,size->0.09);
+      sC = meet3d(lC,s,color->pointColor,size->0.09);
+      sD = meet3d(lD,s,color->pointColor,size->0.09);
+      sE = meet3d(lE,s,color->meetColor,size->0.09);
 
       moveTo(P,X):=(
         dgs3dTracePoint(P,X);
