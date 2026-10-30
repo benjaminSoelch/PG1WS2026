@@ -77,10 +77,6 @@
       ),[A]);
       conic = meet3d(cone,p);
 
-      moveTo(P,X):=(
-        dgs3dTracePoint(P,X);
-        dgs3dRedrawChildren(P);
-      );
       movePlane(p,x):=(
         dgs3dTracePoint(p,x);
         dgs3dRedrawChildren(p);
@@ -95,27 +91,27 @@
       );
       resetCircle():=(
         movePlane(p,(0,0,1,1));
-        moveTo(A,(0,0,-1,1));
+        dsg3dMovePoint(A,(0,0,-1,1));
       );
       resetEllipse():=(
         movePlane(p,(0,0,1,1));
-        moveTo(A,(sin(0.5),0,-cos(0.5),1));
+        dsg3dMovePoint(A,(sin(0.5),0,-cos(0.5),1));
       );
       resetParabola():=(
         movePlane(p,(0,0,1,1));
-        moveTo(A,(sqrt(2)/2,0,-sqrt(2)/2,1));
+        dsg3dMovePoint(A,(sqrt(2)/2,0,-sqrt(2)/2,1));
       );
       resetHyperbola():=(
         movePlane(p,(0,0,1,1));
-        moveTo(A,(1,0,0,1));
+        dsg3dMovePoint(A,(1,0,0,1));
       );
       resetLines():=(
         movePlane(p,(0,0,1,0));
-        moveTo(A,(1,0,0,1));
+        dsg3dMovePoint(A,(1,0,0,1));
       );
       resetDoubleLine():=(
         movePlane(p,(0,0,1,0));
-        moveTo(A,(sqrt(2)/2,0,-sqrt(2)/2,1));
+        dsg3dMovePoint(A,(sqrt(2)/2,0,-sqrt(2)/2,1));
       );
     </script>
     <script id="csdraw" type="text/x-cindyscript">

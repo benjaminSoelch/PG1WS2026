@@ -114,10 +114,6 @@
         apply(sE,dgs3dUpdateColor(#,visible->visible));
       );
 
-      moveTo(P,X):=(
-        dgs3dTracePoint(P,X);
-        dgs3dRedrawChildren(P);
-      );
       resetCoords():=(
         // TODO: replace with reset in cgl.cjs once implemented
         cgl3d.spaceTransform = ((1,0,0,0),(0,1,0,0),(0,0,1,0),(0,0,0,1));
@@ -127,16 +123,16 @@
         dgs3dHandleZoom(zoom);
       );
       resetCross():=(
-        moveTo(A,(-1,-1,-1,1));
-        moveTo(B,(1,1,-1,1));
-        moveTo(C,(1,-1,-1,1));
-        moveTo(D,(-1,1,-1,1));
+        dsg3dMovePoint(A,(-1,-1,-1,1));
+        dsg3dMovePoint(B,(1,1,-1,1));
+        dsg3dMovePoint(C,(1,-1,-1,1));
+        dsg3dMovePoint(D,(-1,1,-1,1));
       );
       resetParallel():=(
-        moveTo(A,(-1,-1,-1,1));
-        moveTo(B,(1,-1,-1,1));
-        moveTo(C,(1,1,-1,1));
-        moveTo(D,(-1,1,-1,1));
+        dsg3dMovePoint(A,(-1,-1,-1,1));
+        dsg3dMovePoint(B,(1,-1,-1,1));
+        dsg3dMovePoint(C,(1,1,-1,1));
+        dsg3dMovePoint(D,(-1,1,-1,1));
       );
     </script>
     <script id="csdraw" type="text/x-cindyscript">
